@@ -41,42 +41,13 @@ def a_star_search(input_chars, target_length, pagerank_scores, poem_database):
     return None, None
 
 
-from itertools import permutations
-from tqdm import tqdm  # 用于显示进度条
-
-def brute_force_search_with_progress(input_chars, target_length, pagerank_scores, poem_database):
-    best_poem = None
-    best_score = float('-inf')
-
-    # 统计所有可能的排列数量
-    total_combinations = sum(len(list(permutations(input_chars, length))) for length in range(1, target_length + 1))
-
-    # 使用 tqdm 显示进度条
-    with tqdm(total=total_combinations, desc="搜索进度") as pbar:
-        for length in range(1, target_length + 1):  # 支持不同长度
-            for perm in permutations(input_chars, length):
-                candidate = "".join(perm)
-                score = calculate_weighted_score(perm, pagerank_scores)
-
-                # 检查数据库中是否有该诗句
-                if candidate in poem_database:
-                    if score > best_score:
-                        best_poem = candidate
-                        best_score = score
-
-                pbar.update(1)  # 更新进度条
-
-    return best_poem, best_score
-
-
-
 # 主程序：进行诗句检索
 def main():
     config = load_config()
     log_dir = config["log_directory"]
     logger = setup_logger(log_dir)
     
-    input_chars = ["明", "月", "光", "松", "間", "照", "清", "泉", "石"]
+    input_chars = ["如", "何", "山", "谷", "老", "上", "清", "泉", "石"]
     target_length = config["retrieval_target_length"]
 
     logger.info("开始加载数据库...")
@@ -85,24 +56,14 @@ def main():
 
     poem_database = database["poem_database"]
     pagerank_scores = database["pagerank_scores"]
-    
-    # 打印数据库内容和PageRank分数
-    logger.debug(f"诗句数据库: {poem_database}")
-    logger.debug(f"PageRank分数: {pagerank_scores}")
-    
     logger.info("数据库加载完成，开始检索...")
 
-    # 调用暴力搜索（带进度条）
-    best_poem, best_score = brute_force_search_with_progress(input_chars, target_length, pagerank_scores, poem_database)
+    best_poem, best_score = a_star_search(input_chars, target_length, pagerank_scores, poem_database)
 
     if best_poem:
         logger.info(f"找到诗句：{best_poem}，评分：{best_score}")
     else:
-        logger.warning("未找到符合条件的诗句！")
-
-if __name__ == "__main__":
-    main()
-
+        logger.info("未找到符合条件的诗句")
 
 
 if __name__ == "__main__":
