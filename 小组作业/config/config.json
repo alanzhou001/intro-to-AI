@@ -1,0 +1,6 @@
+{
+    "raw_poem_directory": "db/raw_poems/",
+    "processed_poem_file": "db/processed/poem_database_with_pagerank.json",
+    "log_directory": "logs/",
+    "retrieval_target_length": 5
+}
