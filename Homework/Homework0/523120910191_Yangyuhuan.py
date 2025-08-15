@@ -5,7 +5,9 @@ class Hero():
         """Initialize the Hero"""
 
         self.x = x
+        
         self.y = y
+        
         self.blood = blood
 
     def __str__(self):
